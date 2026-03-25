@@ -10,7 +10,7 @@ from telethon import TelegramClient
 from telethon.errors import FloodWaitError
 
 from gastown_telethon.config import load_telethon_env
-from gastown_telethon.forum import get_topic_top_message_id, send_in_topic, wait_for_bot_reply_in_thread
+from gastown_telethon.forum import get_topic_top_message_id, send_in_topic, wait_for_bot_reply_to_ping
 from gastown_telethon.forum_config import load_forum_health_config
 from gastown_telethon.helpers import load_dotenv_if_present, otp_from_file
 
@@ -79,12 +79,13 @@ async def async_main() -> int:
             continue
 
         try:
-            reply = await wait_for_bot_reply_in_thread(
+            reply = await wait_for_bot_reply_to_ping(
                 client,
                 full_group,
                 bot,
-                top_mid,
                 sent.id,
+                topic_id=tid,
+                top_message_id=top_mid,
                 timeout=fcfg.reply_timeout_sec,
             )
         except Exception as e:

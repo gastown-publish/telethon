@@ -7,7 +7,7 @@ import time
 
 from telethon import TelegramClient
 from telethon.tl import functions
-from telethon.tl.types import ForumTopic, ForumTopicDeleted
+from telethon.tl.types import ForumTopic, ForumTopicDeleted, MessageReplyHeader
 
 
 async def get_topic_top_message_id(client: TelegramClient, entity, topic_id: int) -> int:
@@ -24,25 +24,47 @@ async def get_topic_top_message_id(client: TelegramClient, entity, topic_id: int
     raise ValueError(f"Topic {topic_id}: unexpected type {type(t).__name__}")
 
 
-async def wait_for_bot_reply_in_thread(
+async def wait_for_bot_reply_to_ping(
     client: TelegramClient,
     group,
     bot_username: str,
-    top_message_id: int,
-    after_message_id: int,
+    ping_message_id: int,
     *,
-    timeout: float = 45.0,
+    topic_id: int | None = None,
+    top_message_id: int | None = None,
+    timeout: float = 90.0,
 ) -> str | None:
-    """Wait for a new message from ``bot_username`` in the thread anchored at ``top_message_id``."""
+    """Wait for a reply from ``bot_username`` after our ping (forum-safe).
+
+    We cannot use ``iter_messages(..., reply_to=top_msg)`` on forums — Telegram returns
+    ``TOPIC_ID_INVALID`` for ``GetRepliesRequest``. We scan recent group history instead.
+
+    Matching (first wins):
+    1. ``MessageReplyHeader.reply_to_msg_id == ping_message_id`` (direct reply to our ping)
+    2. Same sender and ``reply_to_top_id`` equals ``topic_id`` or ``top_message_id``
+       (forum thread match when the bot does not quote our message id by number)
+    """
     deadline = time.time() + timeout
     while time.time() < deadline:
         await asyncio.sleep(2)
-        async for msg in client.iter_messages(group, limit=20, reply_to=top_message_id):
-            if msg.id <= after_message_id:
+        best_loose = None
+        async for msg in client.iter_messages(group, limit=50):
+            if msg.id <= ping_message_id:
                 continue
             sender = await msg.get_sender()
-            if sender and hasattr(sender, "username") and sender.username == bot_username:
-                return msg.text or ""
+            if not sender or not hasattr(sender, "username") or sender.username != bot_username:
+                continue
+            r = msg.reply_to
+            if isinstance(r, MessageReplyHeader):
+                if r.reply_to_msg_id == ping_message_id:
+                    return msg.text or ""
+                tops = [x for x in (topic_id, top_message_id) if x is not None]
+                if tops and r.reply_to_top_id in tops:
+                    return msg.text or ""
+            if best_loose is None or msg.id < best_loose.id:
+                best_loose = msg
+        if best_loose is not None:
+            return best_loose.text or ""
     return None
 
 
