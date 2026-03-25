@@ -24,6 +24,7 @@ dev = [
 gastown-telethon-integration = "gastown_telethon.scripts.integration:main"
 gastown-telethon-all-bots = "gastown_telethon.scripts.all_bots:main"
 gastown-telethon-ping = "gastown_telethon.scripts.ping:main"
+gastown-telethon-forum-health = "gastown_telethon.scripts.forum_health:main"
 
 [tool.setuptools.packages.find]
 where = ["."]

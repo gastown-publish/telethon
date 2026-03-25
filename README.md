@@ -35,6 +35,7 @@ Subsequent runs reuse `data/tg_session.session` (path from `TELETHON_SESSION_PAT
 | `gastown-telethon-ping` | Ping each bot in `TELEGRAM_TEST_PING_BOTS` with `@bot ping` |
 | `gastown-telethon-integration` | Full scenario for gasclaw + minimax (spawn, lists, ignore rules) |
 | `gastown-telethon-all-bots` | Every bot in `examples/bots.example.json` (override path with `TELETHON_BOTS_CONFIG`) |
+| `gastown-telethon-forum-health` | **Per-topic forum health** — pings each bot in its topic ([examples/forum_health.example.json](examples/forum_health.example.json)); used by **gasclaw-management** monitoring |
 
 Or run as modules:
 
@@ -55,6 +56,7 @@ See [.env.example](.env.example). Required for all scripts:
 Optional:
 
 - `TELEGRAM_OTP_CODE_FILE` — default `/tmp/tg_otp_code`
+- `TELETHON_FORUM_HEALTH_CONFIG` — path to JSON for `gastown-telethon-forum-health` (default: `examples/forum_health.example.json`)
 - `TELEGRAM_TEST_GASCLAW_BOT`, `TELEGRAM_TEST_MINIMAX_BOT` — usernames for integration test
 - `TELEGRAM_TEST_PING_BOTS` — comma-separated list for ping
 - `TELETHON_BOTS_CONFIG` — JSON for `all_bots` (see [examples/bots.example.json](examples/bots.example.json))
