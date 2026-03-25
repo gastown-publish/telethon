@@ -70,21 +70,37 @@ See [docs/gasclaw-integration.md](docs/gasclaw-integration.md) for how **OpenCla
 - Rotate [my.telegram.org](https://my.telegram.org) credentials if exposed.
 - If you previously committed `API_ID` / `API_HASH` / phone numbers in ad-hoc scripts under `telegram-test/`, rotate those credentials and rely on `.env` only.
 
-## Publishing this repository
+## CI and pushing to GitHub
 
-If you are creating the GitHub repo for the first time:
+Nothing runs as a **daemon** by default: you execute scripts when you need them. Before every push, run:
 
 ```bash
-cd /path/to/telethon
-git init
-git add .
-git commit -m "Initial import: Gastown Telethon integration harness"
-git branch -M main
-git remote add origin https://github.com/gastown-publish/telethon.git
-git push -u origin main
+./scripts/ci.sh
 ```
 
-Requires permission on the `gastown-publish` organization.
+This runs:
+
+1. **`scripts/scan_credentials.py`** — scans git-tracked files for Telegram bot-token shapes and 32-hex `api_hash` values (no `.env` or `*.session` should be committed).
+2. **`pytest tests/`** — offline tests (no Telegram network or credentials).
+
+GitHub Actions runs the same checks on every push and PR (`.github/workflows/ci.yml`).
+
+**Optional local hook** (runs `ci.sh` before `git push`):
+
+```bash
+git config core.hooksPath .githooks
+```
+
+## Publishing this repository
+
+The repo **already exists** at [github.com/gastown-publish/telethon](https://github.com/gastown-publish/telethon). To push from a fresh clone:
+
+```bash
+git clone https://github.com/gastown-publish/telethon.git
+cd telethon
+./scripts/ci.sh   # must pass before you push
+git push
+```
 
 ## License
 
