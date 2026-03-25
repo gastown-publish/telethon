@@ -56,7 +56,7 @@ See [.env.example](.env.example). Required for all scripts:
 Optional:
 
 - `TELEGRAM_OTP_CODE_FILE` — default `/tmp/tg_otp_code`
-- `TELETHON_FORUM_HEALTH_CONFIG` — path to JSON for `gastown-telethon-forum-health` (default: `examples/forum_health.example.json`)
+- `TELETHON_FORUM_HEALTH_CONFIG` — path to JSON for `gastown-telethon-forum-health` (default: `examples/forum_health.example.json`). Per-topic **`"optional": true`** skips failure when a bot cannot reply (e.g. missing `botToken`).
 - `TELEGRAM_TEST_GASCLAW_BOT`, `TELEGRAM_TEST_MINIMAX_BOT` — usernames for integration test
 - `TELEGRAM_TEST_PING_BOTS` — comma-separated list for ping
 - `TELETHON_BOTS_CONFIG` — JSON for `all_bots` (see [examples/bots.example.json](examples/bots.example.json))

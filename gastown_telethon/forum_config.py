@@ -17,6 +17,7 @@ class ForumTopicSpec:
     topic_id: int
     bot_username: str
     label: str
+    optional: bool = False
 
 
 @dataclass(frozen=True)
@@ -39,6 +40,7 @@ def load_forum_health_config(path: Path | None = None) -> ForumHealthConfig:
             topic_id=int(t["topic_id"]),
             bot_username=str(t["bot_username"]),
             label=str(t["label"]),
+            optional=bool(t.get("optional", False)),
         )
         for t in data["topics"]
     ]

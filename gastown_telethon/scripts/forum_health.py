@@ -96,6 +96,12 @@ async def async_main() -> int:
         if reply is not None:
             preview = (reply[:120] + "…") if len(reply) > 120 else reply
             print(f"  ✅ reply from @{bot}: {preview!r}")
+        elif spec.optional:
+            print(
+                f"  ⏭ skipped (optional): no reply from @{bot} — "
+                "configure channels.telegram.botToken for this bot or set optional:false after fixing.",
+                file=sys.stderr,
+            )
         else:
             print(f"  ❌ no reply from @{bot} within {fcfg.reply_timeout_sec}s", file=sys.stderr)
             print(_debug_hint(label, bot), file=sys.stderr)
