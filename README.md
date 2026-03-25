@@ -68,6 +68,7 @@ See [docs/gasclaw-integration.md](docs/gasclaw-integration.md) for how **OpenCla
 - Never commit `.env`, `*.session`, or API hashes.
 - Treat `*.session` like a password (full account access).
 - Rotate [my.telegram.org](https://my.telegram.org) credentials if exposed.
+- If you previously committed `API_ID` / `API_HASH` / phone numbers in ad-hoc scripts under `telegram-test/`, rotate those credentials and rely on `.env` only.
 
 ## Publishing this repository
 
