@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gastown-telethon"
+version = "0.1.0"
+description = "Telethon-based human-account integration tests for Gastown Telegram bots (Gasclaw / OpenClaw)"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+  "telethon>=1.34.0",
+  "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "ruff>=0.8.0",
+]
+
+[project.scripts]
+gastown-telethon-integration = "gastown_telethon.scripts.integration:main"
+gastown-telethon-all-bots = "gastown_telethon.scripts.all_bots:main"
+gastown-telethon-ping = "gastown_telethon.scripts.ping:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["gastown_telethon*"]

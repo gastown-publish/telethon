@@ -1,0 +1,17 @@
+{
+  "group_id": -1003810709807,
+  "bots": {
+    "gasclaw_master_bot": {
+      "label": "gasclaw",
+      "spawn_agent": "crew-1"
+    },
+    "minimax_gastown_publish_bot": {
+      "label": "minimax",
+      "spawn_agent": "coordinator"
+    },
+    "gasskill_agent_bot": {
+      "label": "gasskill",
+      "spawn_agent": "skill-dev"
+    }
+  }
+}

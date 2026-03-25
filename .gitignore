@@ -1,0 +1,26 @@
+# Secrets and local state
+.env
+.env.*
+!.env.example
+data/
+*.session
+*.session-journal
+config/bots.local.json
+config/config.local.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+
+# Local virtualenv may use different Python minor
+.python-version
+
+# IDE
+.idea/
+.vscode/
