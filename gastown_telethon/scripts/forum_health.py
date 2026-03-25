@@ -13,6 +13,7 @@ from gastown_telethon.config import load_telethon_env
 from gastown_telethon.forum import get_topic_top_message_id, send_in_topic, wait_for_bot_reply_to_ping
 from gastown_telethon.forum_config import load_forum_health_config
 from gastown_telethon.helpers import load_dotenv_if_present, otp_from_file
+from gastown_telethon.progress_report import ProgressReportRules, validate_hourly_progress_reply
 
 
 def _debug_hint(label: str, bot: str) -> str:
@@ -45,6 +46,11 @@ async def async_main() -> int:
     await client.start(phone=cfg.phone, code_callback=get_code)
     full_group = await client.get_entity(fcfg.group_id)
     print(f"📍 Group: {getattr(full_group, 'title', fcfg.group_id)}")
+
+    report_rules = ProgressReportRules(
+        min_chars=fcfg.min_reply_chars,
+        required_heading_keywords=tuple(x.lower() for x in fcfg.progress_heading_keywords),
+    )
 
     failures = 0
     for spec in fcfg.topics:
@@ -83,8 +89,7 @@ async def async_main() -> int:
                 client,
                 full_group,
                 bot,
-                sent.id,
-                topic_id=tid,
+                sent,
                 top_message_id=top_mid,
                 timeout=fcfg.reply_timeout_sec,
             )
@@ -94,6 +99,15 @@ async def async_main() -> int:
             continue
 
         if reply is not None:
+            ok, verrors = validate_hourly_progress_reply(reply, rules=report_rules)
+            if not ok:
+                print(
+                    f"  ❌ reply from @{bot} failed template validation: {'; '.join(verrors)}",
+                    file=sys.stderr,
+                )
+                print(_debug_hint(label, bot), file=sys.stderr)
+                failures += 1
+                continue
             preview = (reply[:120] + "…") if len(reply) > 120 else reply
             print(f"  ✅ reply from @{bot}: {preview!r}")
         elif spec.optional:

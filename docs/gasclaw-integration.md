@@ -44,6 +44,17 @@ openclaw config validate
 openclaw channels status --probe
 ```
 
+### Forum topic isolation (one bot per topic)
+
+In a **forum** supergroup, each Gasclaw/OpenClaw deployment should answer **only in its dedicated topic**. In `openclaw.json`, under `channels.telegram.groups.<group_id>.topics`, configure each numeric topic id:
+
+- **This bot’s topic:** leave enabled (default), set `requireMention` to `false` if you want replies without `@mention` inside that topic.
+- **Other topics:** set `enabled: false` so this bot does not handle messages there.
+
+That way each agent stays scoped to its thread; users organize work by topic.
+
+The **`gastown-telethon-forum-health`** command pings each topic in order and accepts a reply only from the configured bot **in the same forum thread** as that ping (see `gastown_telethon/forum.py`). It does **not** treat unrelated group traffic as success.
+
 Canonical references (paths vary by machine):
 
 - `gasclaw/docs/guides/openclaw-telegram.md`

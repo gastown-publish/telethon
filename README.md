@@ -56,7 +56,7 @@ See [.env.example](.env.example). Required for all scripts:
 Optional:
 
 - `TELEGRAM_OTP_CODE_FILE` — default `/tmp/tg_otp_code`
-- `TELETHON_FORUM_HEALTH_CONFIG` — path to JSON for `gastown-telethon-forum-health` (default: `examples/forum_health.example.json`). Per-topic **`"optional": true`** skips failure when a bot cannot reply (e.g. missing `botToken`).
+- `TELETHON_FORUM_HEALTH_CONFIG` — path to JSON for `gastown-telethon-forum-health` (default: `examples/forum_health.example.json`). Per-topic **`"optional": true`** skips failure when a bot cannot reply (e.g. missing `botToken`). A bot reply counts only if it is **in the same forum thread** as the ping (activity in other topics does not satisfy the check). The file must list **`topics` sorted by `topic_id` ascending**, with **no duplicate topic ids** and **no duplicate `bot_username`** (enforced when the config is loaded). Replies are **validated** (`gastown_telethon/progress_report.py`): `min_reply_chars`, required `##` heading keywords, and measurable repo signals — so **OK**-only answers are rejected.
 - `TELEGRAM_TEST_GASCLAW_BOT`, `TELEGRAM_TEST_MINIMAX_BOT` — usernames for integration test
 - `TELEGRAM_TEST_PING_BOTS` — comma-separated list for ping
 - `TELETHON_BOTS_CONFIG` — JSON for `all_bots` (see [examples/bots.example.json](examples/bots.example.json))
