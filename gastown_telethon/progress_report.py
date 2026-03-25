@@ -5,6 +5,17 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+# Bot sometimes posts OpenClaw error text instead of a real answer — never treat as success.
+_INFRA_FAILURE_SUBSTRINGS: tuple[tuple[str, str], ...] = (
+    ("kimi-coding", "forbidden route kimi-coding (use moonshot/minimax-m2.5 via LiteLLM)"),
+    ("k2p5", "forbidden model id k2p5"),
+    ("authentication_error", "upstream authentication_error"),
+    ("http 401", "HTTP 401 from model provider"),
+    ("agent failed before reply", "OpenClaw agent failed before reply"),
+    ("all models failed", "all configured models failed"),
+    ("no api key found for provider", "missing provider API key / auth"),
+)
+
 _PLACEHOLDER_OK = re.compile(
     r"^\s*(ok|okay|yes|done|👍|✅)\s*\.?\s*$",
     re.IGNORECASE | re.DOTALL,
@@ -16,6 +27,15 @@ class ProgressReportRules:
     min_chars: int
     """Heading keywords must appear inside ``## ...`` lines (substring match)."""
     required_heading_keywords: tuple[str, ...]
+
+
+def reply_indicates_infrastructure_failure(text: str) -> tuple[bool, str]:
+    """True if the bot message is an error stub (Kimi route, 401, agent failed, etc.)."""
+    t = text.lower()
+    for needle, reason in _INFRA_FAILURE_SUBSTRINGS:
+        if needle.lower() in t:
+            return True, reason
+    return False, ""
 
 
 def validate_hourly_progress_reply(
@@ -35,6 +55,10 @@ def validate_hourly_progress_reply(
     s = text.strip()
     if not s:
         return False, ["empty reply"]
+
+    bad, why = reply_indicates_infrastructure_failure(s)
+    if bad:
+        return False, [f"bot reply is a failure/error message, not a valid report: {why}"]
 
     if _PLACEHOLDER_OK.match(s):
         return False, ["reply is only OK/yes — use the full Markdown template from the prompt"]
